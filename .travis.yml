@@ -1,0 +1,41 @@
+sudo: required
+
+services:
+  - docker
+
+language: node_js
+
+node_js:
+  - node
+
+branches:
+  only:
+    - master
+
+env:
+  global:
+    - DEVOPS_DIR=./devops/prod
+
+before_script:
+# extract secrets
+  - openssl aes-256-cbc -K $encrypted_5c80de095bf9_key -iv $encrypted_5c80de095bf9_iv -in $DEVOPS_DIR/secrets/secrets.tar.enc -out secrets.tar -d
+  - tar xvf ./secrets.tar
+
+# install dependencies
+  - npm i typeorm ts-node mysql
+
+# configure ssh
+  - chmod -R 600 $DEVOPS_DIR/secrets/private_key
+  - eval $(ssh-agent)
+  - ssh-add $DEVOPS_DIR/secrets/private_key
+
+script:
+# create image
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  - docker build ./ -t kilibatest -f devops/prod/docker/Dockerfile 
+  - docker tag kilibatest kilibatest/kilibatest:latest
+  - docker push kilibatest/kilibatest:latest
+
+# push files to server
+  - scp -o StrictHostKeyChecking=no $DEVOPS_DIR/docker/docker-compose.yml ubuntu@${EC2_URL}:/home/ubuntu/docker-compose.yml
+  - ssh -i $DEVOPS_DIR/secrets/private_key ubuntu@$EC2_URL 'bash -s' < $DEVOPS_DIR/scripts/deploy.sh
