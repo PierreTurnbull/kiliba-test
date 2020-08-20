@@ -13,7 +13,7 @@ import { AppService } from './app.service';
       username: process.env.DB_USER,
       password: process.env.DB_PASS,
       database: 'kiliba-test',
-      entities: [],
+      entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
     UsersModule
