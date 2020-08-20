@@ -1,75 +1,42 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# kiliba-test
 
-[travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
-[travis-url]: https://travis-ci.org/nestjs/nest
-[linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
-[linux-url]: https://travis-ci.org/nestjs/nest
-  
-  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
-<a href="https://gitter.im/nestjs/nestjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge"><img src="https://badges.gitter.im/nestjs/nestjs.svg" alt="Gitter" /></a>
-<a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
-  <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+A simple API ready to deploy for a technical test.
 
-## Description
+API URL: http://15.188.238.218:4100/
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+The database is not accessible from outside.
 
-## Installation
+## Get started
 
-```bash
-$ npm install
+```
+npm start
 ```
 
-## Running the app
+This deploys 2 containers: one for the API (port 4100) and one for the DB (port 4200).
 
-```bash
-# development
-$ npm run start
+## Routes
 
-# watch mode
-$ npm run start:dev
+- GET /users returns a list of users
+  - query parameters: email (optional)
+- POST /users create a list of users
 
-# production mode
-$ npm run start:prod
-```
+## How it works
 
-## Test
+NestJS is an API framework. It is easy to use, very well documented and supported and has a big community behind it.
 
-```bash
-# unit tests
-$ npm run test
+Its main components are the following:
 
-# e2e tests
-$ npm run test:e2e
+- Controllers expose routes to the outside and handles them.
+- Services communicate with internal services, such as database or cache systems. Typically, controllers call services.
+- Repositories are interfaces between the API and the database. They provide tools for accessing the database.
+- Entity represent database data. NestJS uses an ORM (TypeORM in our case) to map these entities to the database.
+- DTOs are... [DTOs](https://en.wikipedia.org/wiki/Data_transfer_object). They are patterns for data transfers.
+- Modules are a way of registrating all these components in order for the API to know that they work together.
 
-# test coverage
-$ npm run test:cov
-```
+For example, `UserController` exposes `GET /users` to the outside. Whenever it is called, it calls `UserService`'s `getUsers`. This function uses `Repository<UserEntity>` (the `Repository` corresponding to the `UserEntity`) in order to fetch users in the database. `UserEntity` defines what the data should look like. Also, it is possible to pass the query parameter `email` to `GET /users`. The query should correspond to `GetUsersRequestQueryDTO` (in order for it to become a requirement, implement [validation](https://docs.nestjs.com/techniques/validation)). The `UserModule` registrates `UserController`, `UserService` and `UserEntity` as its components so they API know they work together.
 
-## Support
+## Deployment
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+When done working, merge your changes on master. This will trigger a Travis build and the application will be redeployed.
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-  Nest is [MIT licensed](LICENSE).
+Note that the private key used to access the server and the environment variables for production are accessible in an encrypted archive. Travis decrypts this archive and uses them to deploy the application. They cannot be decrypted out of Travis. If you need to use another private key or change the environment variables, you must recreate the encrypted archive with `npm run build:enc`. Please check in `devops/prod/scripts/build_enc.sh` that the path towards the new private key is valid.
