@@ -14,7 +14,7 @@ services:
     container_name: kiliba-test-db
     image: mysql:5.7
     env_file:
-      - ../../../devops/dev/secrets/.env
+      - .env
     environment:
       - MYSQL_DATABASE=${DB_SCHEMA}
       - MYSQL_PASSWORD=${DB_PASS}

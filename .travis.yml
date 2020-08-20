@@ -38,4 +38,5 @@ script:
 
 # push files to server
   - scp -o StrictHostKeyChecking=no $DEVOPS_DIR/docker/docker-compose.yml ubuntu@${EC2_URL}:/home/ubuntu/docker-compose.yml
+  - scp -o StrictHostKeyChecking=no $DEVOPS_DIR/secrets/.env ubuntu@${EC2_URL}:/home/ubuntu/.env
   - ssh -i $DEVOPS_DIR/secrets/private_key ubuntu@$EC2_URL 'bash -s' < $DEVOPS_DIR/scripts/deploy.sh
