@@ -1,8 +1,8 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
-import { UserRequestBodyDTO } from './user.request.body.dto';
+import { CreateUserRequestBodyDTO } from './createUser.request.body.dto';
 
 @Injectable()
 export class UserService {
@@ -21,7 +21,7 @@ export class UserService {
     return query.getMany()
   }
 
-  async createUsers(users: UserRequestBodyDTO[]) {
+  async createUsers(users: CreateUserRequestBodyDTO[]) {
     let alreadyExistingUsers = []
     for (let i = 0; i < users.length; i++) {
       const newUser = new UserEntity()
