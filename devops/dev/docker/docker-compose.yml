@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  api:
+    container_name: 'kiliba-test-api'
+    build:
+      context: ../../..
+      dockerfile: ./devops/dev/docker/Dockerfile
+    env_file:
+      - ../../../devops/dev/secrets/.env
+    ports:
+      - 4100:3000
+    volumes:
+      - ../../..:/home/node
+    depends_on:
+      - db
+  db:
+    container_name: 'kiliba-test-db'
+    image: mysql:5.7
+    env_file:
+      - ../../../devops/dev/secrets/.env
+    environment:
+      - MYSQL_DATABASE=${DB_SCHEMA}
+      - MYSQL_PASSWORD=${DB_PASS}
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
+      - MYSQL_USER=${DB_USER}
+    ports:
+      - 4200:3306
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data: {}
