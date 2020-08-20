@@ -10,7 +10,13 @@ export class UserService {
       private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  async getUsers() {
-    return this.userRepository.find();
+  async getUsers(email) {
+    const query = this.userRepository.createQueryBuilder('user')
+    if (email) {
+      query.where('email = :email')
+      query.setParameter(':email', { email })
+    }
+
+    return query.getMany()
   }
 }
